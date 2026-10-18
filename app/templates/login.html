@@ -1,0 +1,130 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Login - Smart Job Application Portal</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <div class="login-container">
+        <div class="login-box">
+
+            <h1>Login</h1>
+            <p>Smart Job Application Portal</p>
+
+            <form id="loginForm">
+                <label for="email">Email</label>
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="Enter your email"
+                    autocomplete="email"
+                    required
+                >
+
+                <label for="password">Password</label>
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Enter your password"
+                    autocomplete="current-password"
+                    required
+                >
+
+                <button type="submit" id="loginButton">Login</button>
+            </form>
+
+            <p id="message"
+               role="alert"
+               aria-live="polite"
+               style="margin-top: 15px; font-weight: bold;">
+            </p>
+
+            <p class="register-text">
+                Don't have an account?
+                <a href="/register-page">Register</a>
+            </p>
+
+        </div>
+    </div>
+
+    <script>
+        const loginForm = document.getElementById("loginForm");
+        const message = document.getElementById("message");
+        const loginButton = document.getElementById("loginButton");
+
+        loginForm.addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value;
+
+            message.textContent = "";
+            loginButton.disabled = true;
+            loginButton.textContent = "Logging in...";
+
+            try {
+                const response = await fetch("/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password
+                    })
+                });
+
+                const result = await response.json();
+
+                if (!response.ok || !result.success) {
+                    message.textContent =
+                        result.message || "Login failed. Please check your credentials.";
+                    message.style.color = "red";
+                    return;
+                }
+
+                // Verify the server returned a token.
+                if (!result.token) {
+                    message.textContent =
+                        "Login response did not include a token. Please check app/auth.py.";
+                    message.style.color = "red";
+                    return;
+                }
+
+                // Save the JWT token returned by Flask.
+                localStorage.setItem("token", result.token);
+
+                message.textContent = "Login successful!";
+                message.style.color = "green";
+
+                // Redirect according to the role returned by Flask.
+                if (result.user && result.user.role === "admin") {
+                    window.location.href = "/admin";
+                } else {
+                    window.location.href = "/dashboard";
+                }
+
+            } catch (error) {
+                console.error("Login error:", error);
+
+                message.textContent =
+                    "Unable to connect to the server. Make sure Flask is running.";
+                message.style.color = "red";
+
+            } finally {
+                loginButton.disabled = false;
+                loginButton.textContent = "Login";
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Manage Applications | Smart Job Portal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        body {
+            min-height: 100vh;
+            padding: 28px 20px;
+            background: #f5f8f7;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin: auto;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .topbar h1 {
+            margin-bottom: 8px;
+            color: #153b30;
+        }
+
+        .muted { color: #718078; }
+
+        .back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 11px 16px;
+            border: 1px solid #d7e6df;
+            border-radius: 10px;
+            background: white;
+            color: #16734d;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .back:hover {
+            background: #eaf6ef;
+        }
+
+        .card {
+            padding: 24px;
+            border: 1px solid #e4ece7;
+            border-radius: 16px;
+            background: white;
+            box-shadow: 0 8px 28px rgba(22, 60, 43, .05);
+        }
+
+        .table-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .table-heading h2 {
+            margin: 0;
+            color: #183c30;
+            font-size: 20px;
+        }
+
+        .count-badge {
+            padding: 7px 12px;
+            border-radius: 20px;
+            background: #e8f6ed;
+            color: #16734d;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        #message {
+            margin: 0 0 16px;
+            font-weight: 600;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            border: 1px solid #e8eee9;
+            border-radius: 12px;
+        }
+
+        table {
+            width: 100%;
+            min-width: 1050px;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 15px 14px;
+            border-bottom: 1px solid #edf1ee;
+            text-align: left;
+            vertical-align: middle;
+            font-size: 14px;
+        }
+
+        th {
+            background: #f3f8f5;
+            color: #476257;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: .04em;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        tbody tr:hover { background: #f9fcfa; }
+        tbody tr:last-child td { border-bottom: 0; }
+
+        select {
+            min-width: 135px;
+            padding: 10px;
+            border: 1px solid #d5e2da;
+            border-radius: 9px;
+            background: white;
+            color: #294638;
+            font: inherit;
+        }
+
+        select:focus {
+            outline: 2px solid #a5d7b7;
+            border-color: #21865b;
+        }
+
+        button {
+            padding: 10px 15px;
+            border: 0;
+            border-radius: 9px;
+            background: #198754;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background .2s, transform .2s;
+        }
+
+        button:hover:not(:disabled) {
+            background: #126c42;
+            transform: translateY(-1px);
+        }
+
+        button:disabled, select:disabled {
+            opacity: .6;
+            cursor: wait;
+        }
+
+        .empty-state {
+            padding: 35px 16px;
+            color: #718078;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            body { padding: 18px 12px; }
+            .card { padding: 16px; }
+            .topbar h1 { font-size: 26px; }
+            .back { width: 100%; justify-content: center; }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <header class="topbar">
+        <div>
+            <h1>Manage Applications</h1>
+            <p class="muted">Review applicants and manage their application progress.</p>
+        </div>
+        <a class="back" href="/admin">← Admin Dashboard</a>
+    </header>
+
+    <section class="card">
+        <div class="table-heading">
+            <h2>Applicant Overview</h2>
+            <span class="count-badge" id="count">Loading applications...</span>
+        </div>
+
+        <p id="message" role="status" aria-live="polite"></p>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                <tr>
+                    <th>Application ID</th>
+                    <th>Applicant</th>
+                    <th>Email</th>
+                    <th>Job</th>
+                    <th>Company</th>
+                    <th>Applied At</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody id="applicationsTable"></tbody>
+            </table>
+        </div>
+    </section>
+</div>
+
+<script>
+    const table = document.getElementById("applicationsTable");
+    const count = document.getElementById("count");
+    const message = document.getElementById("message");
+
+    const statuses = [
+        "Applied",
+        "Under Review",
+        "Shortlisted",
+        "Selected",
+        "Rejected"
+    ];
+
+    function showMessage(text, isError = false) {
+        message.textContent = text;
+        message.style.color = isError ? "#c93636" : "#187443";
+    }
+
+    async function apiRequest(url, options = {}) {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            window.location.href = "/login-page";
+            throw new Error("Please log in as an administrator.");
+        }
+
+        const response = await fetch(url, {
+            ...options,
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                ...(options.body
+                    ? {"Content-Type": "application/json"}
+                    : {}),
+                ...options.headers
+            }
+        });
+
+        let result;
+        try {
+            result = await response.json();
+        } catch {
+            throw new Error("The server returned an invalid response.");
+        }
+
+        if (response.status === 401) {
+            localStorage.removeItem("token");
+            localStorage.removeItem("role");
+            window.location.href = "/login-page";
+            throw new Error(result.message || "Please log in again.");
+        }
+
+        if (response.status === 403) {
+            throw new Error("Admin access required.");
+        }
+
+        if (!response.ok || !result.success) {
+            throw new Error(result.message || "Request failed.");
+        }
+
+        return result;
+    }
+
+    async function updateStatus(applicationId, select, button) {
+        button.disabled = true;
+        select.disabled = true;
+        showMessage("");
+
+        try {
+            const result = await apiRequest(
+                `/api/admin/applications/${applicationId}`,
+                {
+                    method: "PATCH",
+                    body: JSON.stringify({status: select.value})
+                }
+            );
+
+            showMessage(result.message || "Application status updated successfully.");
+        } catch (error) {
+            showMessage(error.message, true);
+            await loadApplications();
+        } finally {
+            button.disabled = false;
+            select.disabled = false;
+        }
+    }
+
+    async function loadApplications() {
+        table.replaceChildren();
+        count.textContent = "Loading...";
+        showMessage("");
+
+        try {
+            const result = await apiRequest("/api/admin/applications");
+            const applications = result.applications || [];
+
+            count.textContent = `${applications.length} application(s)`;
+
+            if (applications.length === 0) {
+                const row = table.insertRow();
+                const cell = row.insertCell();
+                cell.colSpan = 8;
+                cell.className = "empty-state";
+                cell.textContent = "No applications found yet.";
+                return;
+            }
+
+            applications.forEach(application => {
+                const row = table.insertRow();
+
+                const values = [
+                    application.application_id,
+                    application.applicant_name,
+                    application.applicant_email,
+                    application.job_title,
+                    application.company,
+                    application.applied_at
+                        ? new Date(application.applied_at).toLocaleString()
+                        : "Not available"
+                ];
+
+                values.forEach(value => {
+                    const cell = row.insertCell();
+                    cell.textContent = value ?? "—";
+                });
+
+                const statusCell = row.insertCell();
+                const select = document.createElement("select");
+                select.setAttribute(
+                    "aria-label",
+                    `Status for application ${application.application_id}`
+                );
+
+                statuses.forEach(status => {
+                    const option = document.createElement("option");
+                    option.value = status;
+                    option.textContent = status;
+                    select.appendChild(option);
+                });
+
+                if (
+                    application.status &&
+                    !statuses.includes(application.status)
+                ) {
+                    const option = document.createElement("option");
+                    option.value = application.status;
+                    option.textContent = application.status;
+                    select.appendChild(option);
+                }
+
+                select.value = application.status || "Applied";
+                statusCell.appendChild(select);
+
+                const actionCell = row.insertCell();
+                const button = document.createElement("button");
+                button.type = "button";
+                button.textContent = "Update";
+
+                button.addEventListener("click", () => {
+                    updateStatus(
+                        application.application_id,
+                        select,
+                        button
+                    );
+                });
+
+                actionCell.appendChild(button);
+            });
+        } catch (error) {
+            count.textContent = "Unable to load applications";
+            showMessage(error.message, true);
+        }
+    }
+
+    loadApplications();
+</script>
+</body>
+</html>

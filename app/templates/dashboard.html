@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard | Smart Job Portal</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        body {
+            margin: 0;
+            background: #f5f8f6;
+            color: #18352a;
+            font-family: Arial, sans-serif;
+        }
+
+        .dashboard-nav {
+            background: #fff;
+            border-bottom: 1px solid #e1ebe5;
+            padding: 18px 6%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .brand {
+            color: #087f5b;
+            font-size: 22px;
+            font-weight: 800;
+            text-decoration: none;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+        }
+
+        .nav-right a {
+            color: #496358;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .nav-right a:hover {
+            color: #087f5b;
+        }
+
+        .logout-button {
+            background: #fff;
+            color: #087f5b;
+            border: 1px solid #b9dfc9;
+            border-radius: 9px;
+            padding: 10px 16px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .logout-button:hover {
+            background: #f0faf4;
+        }
+
+        .dashboard-container {
+            width: 90%;
+            max-width: 1100px;
+            margin: 40px auto;
+        }
+
+        .welcome-panel {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(120deg, #075e46, #0b8b63);
+            color: #fff;
+            padding: 35px;
+            border-radius: 20px;
+            box-shadow: 0 12px 30px rgba(8, 127, 91, 0.14);
+        }
+
+        .welcome-panel::after {
+            content: "";
+            position: absolute;
+            width: 230px;
+            height: 230px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            right: -65px;
+            top: -95px;
+            box-shadow: 0 0 0 28px rgba(255, 255, 255, 0.04),
+                        0 0 0 56px rgba(255, 255, 255, 0.03);
+            pointer-events: none;
+        }
+
+        .welcome-label {
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: #c9f3dc;
+        }
+
+        .welcome-panel h1 {
+            font-size: clamp(27px, 4vw, 38px);
+            margin: 12px 0;
+            line-height: 1.2;
+        }
+
+        .welcome-panel p {
+            color: #e0f5e9;
+            line-height: 1.7;
+            max-width: 580px;
+            margin-bottom: 0;
+        }
+
+        #dashboardMessage {
+            display: none;
+            padding: 13px 16px;
+            margin: 20px 0;
+            border-radius: 9px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        #dashboardMessage.visible {
+            display: block;
+        }
+
+        #dashboardMessage.error {
+            background: #fff1f0;
+            color: #a52c25;
+            border: 1px solid #ffd8d5;
+        }
+
+        .section-heading {
+            margin: 36px 0 18px;
+        }
+
+        .section-heading h2 {
+            color: #173d2e;
+            font-size: 23px;
+            margin: 0 0 7px;
+        }
+
+        .section-heading p {
+            color: #71847a;
+            font-size: 14px;
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .dashboard-card {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            min-height: 210px;
+            box-sizing: border-box;
+            background: #fff;
+            padding: 24px;
+            border: 1px solid #e1ebe5;
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(25, 70, 48, 0.04);
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-3px);
+            border-color: #b8dfc9;
+        }
+
+        .card-icon {
+            width: 46px;
+            height: 46px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #e5f6ec;
+            color: #087f5b;
+            border-radius: 13px;
+            font-size: 22px;
+            margin-bottom: 18px;
+        }
+
+        .dashboard-card h3 {
+            color: #214a37;
+            font-size: 17px;
+            margin: 0 0 9px;
+        }
+
+        .dashboard-card p {
+            color: #71847a;
+            font-size: 13px;
+            line-height: 1.7;
+            margin: 0 0 20px;
+        }
+
+        .card-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            color: #087f5b;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 800;
+            margin-top: auto;
+        }
+
+        .card-link:hover {
+            color: #065e43;
+        }
+
+        .dashboard-footer {
+            text-align: center;
+            margin: 35px 0 25px;
+            color: #83948b;
+            font-size: 12px;
+        }
+
+        @media (max-width: 850px) {
+            .dashboard-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 600px) {
+            .dashboard-nav {
+                padding: 16px 5%;
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .nav-right {
+                width: 100%;
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+
+            .dashboard-container {
+                margin: 26px auto;
+            }
+
+            .welcome-panel {
+                padding: 25px 21px;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-card {
+                min-height: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="dashboard-nav">
+        <a href="/dashboard" class="brand">Smart Job Portal</a>
+
+        <div class="nav-right">
+            <a href="/jobs">Find Jobs</a>
+            <a href="/resume">My Resume</a>
+            <a href="/profile">My Profile</a>
+
+            <button type="button" id="logoutButton"
+                    class="logout-button">
+                Logout
+            </button>
+        </div>
+    </nav>
+
+    <main class="dashboard-container">
+
+        <header class="welcome-panel">
+            <div class="welcome-label">Your career workspace</div>
+
+            <h1>
+                Welcome back, <span id="userName">Job Seeker</span>!
+            </h1>
+
+            <p>
+                Your next opportunity starts here. Explore jobs, analyze
+                your resume, and discover career opportunities tailored
+                to your skills.
+            </p>
+        </header>
+
+        <p id="dashboardMessage" role="status" aria-live="polite"></p>
+
+        <section>
+            <div class="section-heading">
+                <h2>Your Career Tools</h2>
+                <p>Everything you need to move forward in your job search.</p>
+            </div>
+
+            <div class="dashboard-grid">
+
+                <article class="dashboard-card">
+                    <div class="card-icon" aria-hidden="true">⌕</div>
+                    <h3>Find Jobs</h3>
+                    <p>
+                        Search opportunities by job title, company,
+                        skills, and location.
+                    </p>
+                    <a href="/jobs" class="card-link">Explore Jobs →</a>
+                </article>
+
+                <article class="dashboard-card">
+                    <div class="card-icon" aria-hidden="true">▤</div>
+                    <h3>Resume Analysis</h3>
+                    <p>
+                        Review the skills detected in your uploaded resume
+                        and improve your job search.
+                    </p>
+                    <a href="/analyze-resume-page" class="card-link">
+                        Analyze Resume →
+                    </a>
+                </article>
+
+                <article class="dashboard-card">
+                    <div class="card-icon" aria-hidden="true">✦</div>
+                    <h3>Job Recommendations</h3>
+                    <p>
+                        Discover jobs selected according to the skills
+                        identified in your resume.
+                    </p>
+                    <a href="/recommendations" class="card-link">
+                        View Recommendations →
+                    </a>
+                </article>
+
+                <article class="dashboard-card">
+                    <div class="card-icon" aria-hidden="true">✓</div>
+                    <h3>My Applications</h3>
+                    <p>
+                        Keep track of the jobs you've applied for
+                        and check your application status.
+                    </p>
+                    <a href="/applications" class="card-link">
+                        Track Applications →
+                    </a>
+                </article>
+
+                <article class="dashboard-card">
+                    <div class="card-icon" aria-hidden="true">↑</div>
+                    <h3>Upload Resume</h3>
+                    <p>
+                        Upload a PDF resume so the portal can identify
+                        your skills and recommend relevant roles.
+                    </p>
+                    <a href="/resume" class="card-link">
+                        Manage Resume →
+                    </a>
+                </article>
+
+                <article class="dashboard-card">
+                    <div class="card-icon" aria-hidden="true">◎</div>
+                    <h3>My Profile</h3>
+                    <p>
+                        View and update your name, mobile number,
+                        qualification, and skills.
+                    </p>
+                    <a href="/profile" class="card-link">
+                        View Profile →
+                    </a>
+                </article>
+
+            </div>
+        </section>
+
+        <footer class="dashboard-footer">
+            Smart Job Portal · Take the next step in your career
+        </footer>
+
+    </main>
+
+    <script>
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            window.location.replace("/login-page");
+        } else {
+            loadDashboard();
+        }
+
+        async function loadDashboard() {
+            const message = document.getElementById("dashboardMessage");
+
+            try {
+                const response = await fetch("/dashboard-data", {
+                    method: "GET",
+                    headers: {
+                        "Authorization": "Bearer " + token
+                    }
+                });
+
+                const result = await response.json();
+
+                if (!response.ok || !result.success) {
+                    localStorage.removeItem("token");
+                    window.location.replace("/login-page");
+                    return;
+                }
+
+                const userName = result.user && result.user.name
+                    ? result.user.name
+                    : "Job Seeker";
+
+                document.getElementById("userName").textContent = userName;
+
+            } catch (error) {
+                message.textContent =
+                    "Unable to load your profile. Please refresh the page and try again.";
+                message.className = "visible error";
+
+                console.error("Dashboard error:", error);
+            }
+        }
+
+        document.getElementById("logoutButton").addEventListener(
+            "click",
+            function() {
+                localStorage.removeItem("token");
+                window.location.replace("/login-page");
+            }
+        );
+    </script>
+
+</body>
+</html>

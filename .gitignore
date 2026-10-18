@@ -1,0 +1,29 @@
+
+# Python
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+env/
+
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+instance/
+
+# User-uploaded resumes and private uploads
+resumes/
+uploads/
+app/static/uploads/
+
+# Local databases and logs
+*.db
+*.sqlite
+*.sqlite3
+*.log
+
+# Editor and operating system files
+.vscode/
+.DS_Store
+Thumbs.db

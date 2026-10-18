@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Dashboard | Smart Job Portal</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        .admin-page {
+            max-width: 1150px;
+            margin: 0 auto;
+            padding: 38px 24px 60px;
+        }
+
+        .admin-hero {
+            position: relative;
+            overflow: hidden;
+            padding: 34px;
+            border-radius: 22px;
+            background: linear-gradient(125deg, #064e3b, #047857);
+            color: white;
+            margin-bottom: 28px;
+        }
+
+        .admin-hero::after {
+            content: "";
+            position: absolute;
+            width: 220px;
+            height: 220px;
+            border: 35px solid rgba(255, 255, 255, 0.07);
+            border-radius: 50%;
+            right: -55px;
+            top: -90px;
+            pointer-events: none;
+        }
+
+        .hero-label {
+            display: inline-block;
+            padding: 7px 12px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.14);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+        }
+
+        .admin-hero h1 {
+            margin: 17px 0 10px;
+            font-size: clamp(27px, 4vw, 36px);
+        }
+
+        .admin-hero p {
+            margin: 0;
+            max-width: 600px;
+            color: #d1fae5;
+            line-height: 1.7;
+        }
+
+        .section-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin: 32px 0 18px;
+        }
+
+        .section-heading h2 {
+            margin: 0;
+            color: #12372b;
+            font-size: 22px;
+        }
+
+        .section-heading p {
+            color: #64748b;
+            margin: 6px 0 0;
+            font-size: 14px;
+        }
+
+        .admin-links {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .admin-action {
+            display: flex;
+            align-items: center;
+            gap: 17px;
+            padding: 23px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            text-decoration: none;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .admin-action:hover {
+            transform: translateY(-3px);
+            border-color: #6ee7b7;
+        }
+
+        .action-icon {
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+            width: 54px;
+            height: 54px;
+            border-radius: 15px;
+            background: #ecfdf5;
+            color: #047857;
+            font-size: 25px;
+        }
+
+        .action-copy {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .action-copy h3 {
+            margin: 0 0 7px;
+            color: #12372b;
+            font-size: 17px;
+        }
+
+        .action-copy p {
+            margin: 0;
+            color: #64748b;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .action-arrow {
+            color: #059669;
+            font-size: 22px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .stat-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 17px;
+            padding: 24px;
+            box-shadow: 0 5px 18px rgba(15, 23, 42, 0.035);
+        }
+
+        .stat-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .stat-label {
+            color: #64748b;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .stat-icon {
+            display: grid;
+            place-items: center;
+            width: 43px;
+            height: 43px;
+            border-radius: 13px;
+            background: #ecfdf5;
+            font-size: 21px;
+        }
+
+        .stat-number {
+            color: #064e3b;
+            font-size: 37px;
+            font-weight: 800;
+            margin: 20px 0 6px;
+            line-height: 1.2;
+        }
+
+        .stat-caption {
+            color: #94a3b8;
+            font-size: 12px;
+            margin: 0;
+        }
+
+        #message {
+            padding: 13px 16px;
+            border-radius: 10px;
+            font-size: 14px;
+            margin: 20px 0 0;
+        }
+
+        #message:empty {
+            display: none;
+        }
+
+        #message.message-success {
+            color: #047857;
+            background: #ecfdf5;
+            border: 1px solid #a7f3d0;
+        }
+
+        #message.message-error {
+            color: #b91c1c;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+        }
+
+        #message.message-warning {
+            color: #92400e;
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+        }
+
+        .logout-button {
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.12);
+            color: white;
+            padding: 11px 17px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .logout-button:hover {
+            background: rgba(255, 255, 255, 0.22);
+        }
+
+        @media (max-width: 760px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .admin-links {
+                grid-template-columns: 1fr;
+            }
+
+            .admin-page {
+                padding: 25px 16px 40px;
+            }
+
+            .admin-hero {
+                padding: 27px 22px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="navbar">
+        <div class="navbar-brand">
+            <span class="brand-icon">✦</span>
+            <span>Smart Job Portal <span style="opacity:.7;">/ Admin</span></span>
+        </div>
+
+        <button type="button" class="logout-button" onclick="logout()">
+            Log Out ↗
+        </button>
+    </header>
+
+    <main class="admin-page">
+        <section class="admin-hero">
+            <span class="hero-label">Administration</span>
+            <h1>Welcome to your Admin Dashboard 📊</h1>
+            <p>
+                Manage job opportunities, review applications, and monitor
+                platform activity from one central workspace.
+            </p>
+        </section>
+
+        <section aria-labelledby="managementHeading">
+            <div class="section-heading">
+                <div>
+                    <h2 id="managementHeading">Management Center</h2>
+                    <p>Quick access to your administrative tools.</p>
+                </div>
+            </div>
+
+            <nav class="admin-links" aria-label="Admin management">
+                <a class="admin-action" href="/admin/jobs">
+                    <span class="action-icon">💼</span>
+                    <span class="action-copy">
+                        <h3>Manage Jobs</h3>
+                        <p>Add job openings and manage existing listings.</p>
+                    </span>
+                    <span class="action-arrow">→</span>
+                </a>
+
+                <a class="admin-action" href="/admin/applications">
+                    <span class="action-icon">📋</span>
+                    <span class="action-copy">
+                        <h3>Manage Applications</h3>
+                        <p>Review candidate applications and update their status.</p>
+                    </span>
+                    <span class="action-arrow">→</span>
+                </a>
+            </nav>
+        </section>
+
+        <section aria-labelledby="statsHeading">
+            <div class="section-heading">
+                <div>
+                    <h2 id="statsHeading">Platform Overview</h2>
+                    <p>A summary of registered users, job listings, and applications.</p>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <article class="stat-card">
+                    <div class="stat-top">
+                        <span class="stat-label">Total Users</span>
+                        <span class="stat-icon">👥</span>
+                    </div>
+                    <p class="stat-number" id="users">—</p>
+                    <p class="stat-caption">Registered platform users</p>
+                </article>
+
+                <article class="stat-card">
+                    <div class="stat-top">
+                        <span class="stat-label">Total Jobs</span>
+                        <span class="stat-icon">💼</span>
+                    </div>
+                    <p class="stat-number" id="jobs">—</p>
+                    <p class="stat-caption">Available job listings</p>
+                </article>
+
+                <article class="stat-card">
+                    <div class="stat-top">
+                        <span class="stat-label">Total Applications</span>
+                        <span class="stat-icon">📨</span>
+                    </div>
+                    <p class="stat-number" id="applications">—</p>
+                    <p class="stat-caption">Applications submitted</p>
+                </article>
+            </div>
+
+            <p id="message" role="status" aria-live="polite">
+                Loading dashboard statistics...
+            </p>
+        </section>
+    </main>
+
+    <script>
+        async function loadStats() {
+            const token = localStorage.getItem("token");
+            const message = document.getElementById("message");
+
+            if (!token) {
+                window.location.replace("/login-page");
+                return;
+            }
+
+            message.className = "";
+            message.textContent = "Loading dashboard statistics...";
+
+            try {
+                const response = await fetch("/api/admin/stats", {
+                    method: "GET",
+                    headers: {
+                        "Authorization": "Bearer " + token
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.status === 401) {
+                    localStorage.removeItem("token");
+                    window.location.replace("/login-page");
+                    return;
+                }
+
+                if (response.status === 403) {
+                    message.className = "message-warning";
+                    message.textContent =
+                        "Access denied. Admin privileges are required.";
+                    return;
+                }
+
+                if (!response.ok || !data.success) {
+                    throw new Error(
+                        data.message || "Unable to load statistics."
+                    );
+                }
+
+                document.getElementById("users").textContent = data.users;
+                document.getElementById("jobs").textContent = data.jobs;
+                document.getElementById("applications").textContent =
+                    data.applications;
+
+                message.className = "message-success";
+                message.textContent = "Dashboard statistics loaded successfully.";
+
+            } catch (error) {
+                message.className = "message-error";
+                message.textContent =
+                    error.message || "Unable to load dashboard statistics.";
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem("token");
+            window.location.replace("/login-page");
+        }
+
+        loadStats();
+    </script>
+</body>
+</html>

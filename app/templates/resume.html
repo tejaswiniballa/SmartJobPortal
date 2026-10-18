@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Upload Resume - Smart Job Portal</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #f5f8f6;
+            color: #193b2b;
+            font-family: Arial, sans-serif;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+            padding: 17px 5%;
+            background: #ffffff;
+            border-bottom: 1px solid #e1ebe5;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #087443;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .brand-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 38px;
+            height: 38px;
+            border-radius: 11px;
+            background: #e7f5ed;
+            font-size: 20px;
+        }
+
+        .navbar-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .navbar a {
+            color: #496653;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .navbar a:hover {
+            color: #087443;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 760px;
+            margin: 48px auto;
+            padding: 0 20px;
+        }
+
+        .page-heading {
+            margin-bottom: 24px;
+        }
+
+        .eyebrow {
+            margin-bottom: 10px;
+            color: #087443;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .page-heading h1 {
+            margin: 0 0 10px;
+            color: #173b2b;
+            font-size: clamp(27px, 4vw, 34px);
+        }
+
+        .page-heading p {
+            margin: 0;
+            color: #6b7b71;
+            font-size: 15px;
+            line-height: 1.7;
+        }
+
+        .card {
+            padding: 30px;
+            background: #ffffff;
+            border: 1px solid #e1ebe5;
+            border-radius: 18px;
+            box-shadow: 0 10px 30px rgba(20, 65, 43, 0.06);
+        }
+
+        .upload-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 58px;
+            height: 58px;
+            margin-bottom: 20px;
+            border-radius: 16px;
+            background: #e7f5ed;
+            color: #087443;
+            font-size: 28px;
+        }
+
+        .card h2 {
+            margin: 0 0 10px;
+            color: #244632;
+            font-size: 20px;
+        }
+
+        .description {
+            margin: 0 0 24px;
+            color: #718076;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .upload-area {
+            padding: 28px 20px;
+            border: 2px dashed #b9d6c4;
+            border-radius: 13px;
+            background: #f8fcf9;
+            text-align: center;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .upload-area:focus-within {
+            border-color: #087443;
+            background: #f0f8f3;
+        }
+
+        .upload-area label {
+            display: block;
+            margin-bottom: 9px;
+            color: #315541;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .upload-area p {
+            margin: 0 0 17px;
+            color: #7b8b81;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        input[type="file"] {
+            display: block;
+            width: 100%;
+            max-width: 100%;
+            padding: 10px;
+            border: 1px solid #d8e3dc;
+            border-radius: 9px;
+            background: #ffffff;
+            color: #496653;
+            font-size: 13px;
+        }
+
+        input[type="file"]::file-selector-button {
+            margin-right: 12px;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            background: #e7f5ed;
+            color: #087443;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .file-name {
+            min-height: 18px;
+            margin-top: 12px;
+            color: #087443;
+            font-size: 13px;
+            overflow-wrap: anywhere;
+        }
+
+        .upload-button {
+            width: 100%;
+            margin-top: 20px;
+            padding: 14px;
+            border: none;
+            border-radius: 9px;
+            background: #087443;
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .upload-button:hover {
+            background: #065f38;
+        }
+
+        .upload-button:disabled {
+            opacity: 0.7;
+            cursor: wait;
+        }
+
+        #message {
+            display: none;
+            margin-top: 20px;
+            padding: 13px 15px;
+            border-radius: 9px;
+            font-size: 14px;
+            line-height: 1.6;
+            overflow-wrap: anywhere;
+        }
+
+        #message.success {
+            display: block;
+            border: 1px solid #c5e5d0;
+            background: #edf8f0;
+            color: #17633a;
+        }
+
+        #message.error {
+            display: block;
+            border: 1px solid #f0cccc;
+            background: #fff1f1;
+            color: #a52c2c;
+        }
+
+        .privacy-note {
+            margin: 20px 0 0;
+            color: #829087;
+            font-size: 12px;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        @media (max-width: 520px) {
+            .navbar {
+                padding: 15px 20px;
+            }
+
+            .navbar-links {
+                gap: 15px;
+            }
+
+            .container {
+                margin: 30px auto;
+                padding: 0 15px;
+            }
+
+            .card {
+                padding: 22px 18px;
+            }
+
+            .upload-area {
+                padding: 22px 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="brand">
+            <span class="brand-icon" aria-hidden="true">✦</span>
+            <span>Smart Job Portal</span>
+        </div>
+
+        <div class="navbar-links">
+            <a href="/dashboard">Dashboard</a>
+            <a href="/jobs">Find Jobs</a>
+        </div>
+    </nav>
+
+    <main class="container">
+
+        <header class="page-heading">
+            <div class="eyebrow">Career profile</div>
+            <h1>Upload Your Resume</h1>
+            <p>
+                Add your latest resume to help you take the next step
+                in your career journey.
+            </p>
+        </header>
+
+        <section class="card">
+            <div class="upload-icon" aria-hidden="true">↑</div>
+
+            <h2>Upload your latest resume</h2>
+
+            <p class="description">
+                Choose your resume in PDF format. Your uploaded resume
+                can be used by the portal's resume analysis and job
+                recommendation features.
+            </p>
+
+            <form id="resumeForm">
+
+                <div class="upload-area">
+                    <label for="resume">Select your resume file</label>
+                    <p>PDF format only</p>
+
+                    <input
+                        type="file"
+                        id="resume"
+                        name="resume"
+                        accept=".pdf,application/pdf"
+                        required
+                    >
+
+                    <div id="fileName" class="file-name">
+                        No file selected
+                    </div>
+                </div>
+
+                <button type="submit" class="upload-button" id="uploadButton">
+                    Upload Resume
+                </button>
+
+            </form>
+
+            <div id="message" role="status" aria-live="polite"></div>
+
+            <p class="privacy-note">
+                Please upload your own resume and verify the file before submitting.
+            </p>
+        </section>
+
+    </main>
+
+    <script>
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            window.location.replace("/login-page");
+        }
+
+        const resumeInput = document.getElementById("resume");
+        const fileName = document.getElementById("fileName");
+        const message = document.getElementById("message");
+        const uploadButton = document.getElementById("uploadButton");
+
+        resumeInput.addEventListener("change", function() {
+            const file = resumeInput.files[0];
+
+            fileName.textContent = file
+                ? file.name
+                : "No file selected";
+
+            message.className = "";
+            message.textContent = "";
+        });
+
+        document.getElementById("resumeForm").addEventListener(
+            "submit",
+            async function(event) {
+                event.preventDefault();
+
+                if (!token) {
+                    window.location.replace("/login-page");
+                    return;
+                }
+
+                const file = resumeInput.files[0];
+
+                if (!file) {
+                    showMessage("Please select a PDF resume.", "error");
+                    return;
+                }
+
+                if (!file.name.toLowerCase().endsWith(".pdf")) {
+                    showMessage("Please select a PDF file.", "error");
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append("resume", file);
+
+                uploadButton.disabled = true;
+                uploadButton.textContent = "Uploading...";
+                message.className = "";
+                message.textContent = "";
+
+                try {
+                    const response = await fetch("/upload-resume", {
+                        method: "POST",
+                        headers: {
+                            "Authorization": "Bearer " + token
+                        },
+                        body: formData
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok && result.success) {
+                        showMessage(
+                            result.message || "Resume uploaded successfully!",
+                            "success"
+                        );
+
+                        document.getElementById("resumeForm").reset();
+                        fileName.textContent = "No file selected";
+                    } else {
+                        showMessage(
+                            result.message || "Unable to upload resume.",
+                            "error"
+                        );
+                    }
+
+                } catch (error) {
+                    showMessage(
+                        "Unable to upload resume. Please try again.",
+                        "error"
+                    );
+
+                    console.error("Resume upload error:", error);
+
+                } finally {
+                    uploadButton.disabled = false;
+                    uploadButton.textContent = "Upload Resume";
+                }
+            }
+        );
+
+        function showMessage(text, type) {
+            message.textContent = text;
+            message.className = type;
+        }
+    </script>
+
+</body>
+</html>

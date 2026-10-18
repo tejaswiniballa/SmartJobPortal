@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account - Smart Job Portal</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        .register-box {
+            width: 100%;
+            max-width: 520px;
+            margin: 32px 16px;
+            padding: 36px;
+            background: #ffffff;
+            border: 1px solid #e1ebe5;
+            border-radius: 18px;
+            box-shadow: 0 12px 35px rgba(20, 65, 43, 0.08);
+        }
+
+        .register-brand {
+            margin-bottom: 28px;
+            text-align: center;
+        }
+
+        .brand-icon {
+            width: 54px;
+            height: 54px;
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #e7f5ed;
+            color: #087443;
+            border-radius: 16px;
+            font-size: 27px;
+        }
+
+        .register-brand h1 {
+            margin-bottom: 9px;
+            color: #173b2b;
+            font-size: 28px;
+        }
+
+        .register-brand p {
+            margin: 0;
+            color: #68786f;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .register-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 17px 16px;
+        }
+
+        .form-field {
+            min-width: 0;
+        }
+
+        .form-field.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .register-form label {
+            display: block;
+            margin-bottom: 7px;
+            color: #294737;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .register-form input {
+            width: 100%;
+            min-width: 0;
+            padding: 12px 13px;
+            border: 1px solid #d8e3dc;
+            border-radius: 9px;
+            background: #fbfdfb;
+            color: #24382d;
+            font: inherit;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .register-form input:focus {
+            border-color: #087443;
+            box-shadow: 0 0 0 3px rgba(8, 116, 67, 0.10);
+            background: #ffffff;
+        }
+
+        .register-form input::placeholder {
+            color: #9aa79f;
+        }
+
+        .register-form button {
+            grid-column: 1 / -1;
+            width: 100%;
+            margin-top: 5px;
+            padding: 13px;
+            border: none;
+            border-radius: 9px;
+            background: #087443;
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+        }
+
+        .register-form button:hover {
+            background: #065f38;
+            transform: translateY(-1px);
+        }
+
+        .register-form button:disabled {
+            opacity: 0.7;
+            cursor: wait;
+            transform: none;
+        }
+
+        #message {
+            margin: 16px 0 0;
+            font-size: 14px;
+            line-height: 1.5;
+            overflow-wrap: anywhere;
+        }
+
+        .register-footer {
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid #edf1ee;
+            text-align: center;
+            color: #6b7b71;
+            font-size: 14px;
+        }
+
+        .register-footer a {
+            color: #087443;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .register-footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 520px) {
+            .register-box {
+                margin: 16px;
+                padding: 25px 20px;
+            }
+
+            .register-form {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .form-field.full-width,
+            .register-form button {
+                grid-column: auto;
+            }
+
+            .register-brand h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="login-container">
+
+        <main class="register-box">
+
+            <div class="register-brand">
+                <div class="brand-icon" aria-hidden="true">✦</div>
+                <h1>Create Account</h1>
+                <p>Start your career journey with Smart Job Portal.</p>
+            </div>
+
+            <form id="registerForm" class="register-form">
+
+                <div class="form-field full-width">
+                    <label for="name">Full Name</label>
+                    <input
+                        type="text"
+                        id="name"
+                        placeholder="Enter your full name"
+                        autocomplete="name"
+                        required
+                    >
+                </div>
+
+                <div class="form-field full-width">
+                    <label for="email">Email Address</label>
+                    <input
+                        type="email"
+                        id="email"
+                        placeholder="you@example.com"
+                        autocomplete="email"
+                        required
+                    >
+                </div>
+
+                <div class="form-field">
+                    <label for="mobile">Mobile Number</label>
+                    <input
+                        type="tel"
+                        id="mobile"
+                        placeholder="10-digit number"
+                        maxlength="10"
+                        inputmode="numeric"
+                        autocomplete="tel"
+                        pattern="[0-9]{10}"
+                        title="Enter a 10-digit mobile number"
+                        required
+                    >
+                </div>
+
+                <div class="form-field">
+                    <label for="qualification">Qualification</label>
+                    <input
+                        type="text"
+                        id="qualification"
+                        placeholder="e.g. B.Tech, MCA"
+                        required
+                    >
+                </div>
+
+                <div class="form-field full-width">
+                    <label for="skills">Skills</label>
+                    <input
+                        type="text"
+                        id="skills"
+                        placeholder="e.g. Python, Java, MySQL"
+                        required
+                    >
+                </div>
+
+                <div class="form-field full-width">
+                    <label for="password">Password</label>
+                    <input
+                        type="password"
+                        id="password"
+                        placeholder="Create a password"
+                        autocomplete="new-password"
+                        required
+                    >
+                </div>
+
+                <button type="submit" id="registerButton">
+                    Create Account
+                </button>
+
+            </form>
+
+            <p id="message" role="status" aria-live="polite"></p>
+
+            <div class="register-footer">
+                Already have an account?
+                <a href="/">Login here</a>
+            </div>
+
+        </main>
+
+    </div>
+
+    <script>
+        document
+            .getElementById("registerForm")
+            .addEventListener("submit", async function(event) {
+
+                event.preventDefault();
+
+                const data = {
+                    name: document.getElementById("name").value.trim(),
+                    email: document.getElementById("email").value.trim(),
+                    mobile: document.getElementById("mobile").value.trim(),
+                    qualification: document.getElementById("qualification").value.trim(),
+                    skills: document.getElementById("skills").value.trim(),
+                    password: document.getElementById("password").value
+                };
+
+                const message = document.getElementById("message");
+                const button = document.getElementById("registerButton");
+
+                message.textContent = "";
+                button.disabled = true;
+                button.textContent = "Creating account...";
+
+                try {
+                    const response = await fetch("/register", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        message.textContent =
+                            result.message || "Registration successful!";
+                        message.style.color = "#087443";
+
+                        document.getElementById("registerForm").reset();
+                    } else {
+                        message.textContent =
+                            result.message || "Registration failed. Please try again.";
+                        message.style.color = "#c0392b";
+                    }
+
+                } catch (error) {
+                    message.textContent =
+                        "Something went wrong. Please try again.";
+                    message.style.color = "#c0392b";
+
+                    console.error("Registration error:", error);
+
+                } finally {
+                    button.disabled = false;
+                    button.textContent = "Create Account";
+                }
+            });
+    </script>
+
+</body>
+</html>
+```

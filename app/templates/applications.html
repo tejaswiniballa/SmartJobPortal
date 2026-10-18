@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Applications | Smart Job Portal</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        .applications-page {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 36px 24px 60px;
+        }
+
+        .page-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 28px;
+        }
+
+        .page-heading h1 {
+            margin: 0 0 8px;
+            color: #12372b;
+            font-size: clamp(26px, 4vw, 34px);
+        }
+
+        .page-heading p {
+            margin: 0;
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        .applications-summary {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #ecfdf5;
+            border: 1px solid #d1fae5;
+            border-radius: 14px;
+            padding: 16px 20px;
+        }
+
+        .summary-number {
+            font-size: 28px;
+            font-weight: 800;
+            color: #047857;
+        }
+
+        .summary-label {
+            color: #475569;
+            font-size: 13px;
+        }
+
+        .application-list {
+            display: grid;
+            gap: 18px;
+        }
+
+        .application-card {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 5px 18px rgba(15, 23, 42, 0.04);
+            transition: border-color 0.2s, transform 0.2s;
+        }
+
+        .application-card:hover {
+            border-color: #a7f3d0;
+            transform: translateY(-2px);
+        }
+
+        .application-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .job-title {
+            margin: 0 0 8px;
+            color: #12372b;
+            font-size: 21px;
+            overflow-wrap: anywhere;
+        }
+
+        .company-name {
+            color: #475569;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .application-details {
+            display: flex;
+            gap: 12px 26px;
+            flex-wrap: wrap;
+            margin-top: 22px;
+            padding-top: 18px;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .detail-item {
+            color: #64748b;
+            font-size: 14px;
+            overflow-wrap: anywhere;
+        }
+
+        .detail-item strong {
+            display: block;
+            color: #334155;
+            margin-bottom: 5px;
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 7px 12px;
+            border-radius: 999px;
+            background: #ecfdf5;
+            color: #047857;
+            font-size: 12px;
+            font-weight: 750;
+            text-transform: capitalize;
+            border: 1px solid #a7f3d0;
+        }
+
+        .status::before {
+            content: "";
+            width: 7px;
+            height: 7px;
+            background: currentColor;
+            border-radius: 50%;
+        }
+
+        .status-pending,
+        .status-under-review {
+            color: #92400e;
+            background: #fffbeb;
+            border-color: #fde68a;
+        }
+
+        .status-rejected {
+            color: #b91c1c;
+            background: #fef2f2;
+            border-color: #fecaca;
+        }
+
+        .status-accepted,
+        .status-selected,
+        .status-shortlisted {
+            color: #047857;
+            background: #ecfdf5;
+            border-color: #a7f3d0;
+        }
+
+        .state-box {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 42px 24px;
+            text-align: center;
+            box-shadow: 0 5px 18px rgba(15, 23, 42, 0.04);
+        }
+
+        .state-icon {
+            font-size: 38px;
+            margin-bottom: 12px;
+        }
+
+        .state-box h2 {
+            color: #12372b;
+            margin: 0 0 10px;
+            font-size: 21px;
+        }
+
+        .state-box p {
+            color: #64748b;
+            line-height: 1.6;
+            margin: 0 0 22px;
+        }
+
+        .state-box.error-state {
+            border-color: #fecaca;
+        }
+
+        .state-box.error-state h2 {
+            color: #b91c1c;
+        }
+
+        .page-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .page-actions a {
+            text-decoration: none;
+        }
+
+        .loading-indicator {
+            color: #64748b;
+            padding: 24px;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            .applications-page {
+                padding: 24px 16px 40px;
+            }
+
+            .application-card {
+                padding: 19px;
+            }
+
+            .applications-summary {
+                width: 100%;
+                box-sizing: border-box;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="navbar">
+        <div class="navbar-brand">
+            <span class="brand-icon">✦</span>
+            <span>Smart Job Portal</span>
+        </div>
+
+        <nav class="navbar-links">
+            <a href="/dashboard">Dashboard</a>
+            <a href="/jobs">Find Jobs</a>
+            <a href="/recommendations">Recommendations</a>
+            <a href="/profile">My Profile</a>
+        </nav>
+    </header>
+
+    <main class="applications-page">
+        <section class="page-heading">
+            <div>
+                <h1>My Applications</h1>
+                <p>Track your applications and stay updated on their progress.</p>
+            </div>
+
+            <div class="applications-summary">
+                <div class="summary-number" id="applicationCount">—</div>
+                <div class="summary-label">Total<br>Applications</div>
+            </div>
+        </section>
+
+        <section id="applications" class="application-list" aria-live="polite">
+            <div class="loading-indicator">Loading your applications...</div>
+        </section>
+    </main>
+
+    <script>
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            window.location.replace("/login-page");
+        } else {
+            loadApplications();
+        }
+
+        async function loadApplications() {
+            const container = document.getElementById("applications");
+            const countElement = document.getElementById("applicationCount");
+
+            try {
+                const response = await fetch("/api/applications", {
+                    method: "GET",
+                    headers: {
+                        "Authorization": "Bearer " + token
+                    }
+                });
+
+                const result = await response.json();
+
+                if (!response.ok || !result.success) {
+                    showState(
+                        container,
+                        "⚠️",
+                        "Unable to load applications",
+                        result.message || "Please try again later.",
+                        true
+                    );
+                    countElement.textContent = "—";
+                    return;
+                }
+
+                const applications = Array.isArray(result.applications)
+                    ? result.applications
+                    : [];
+
+                countElement.textContent = applications.length;
+
+                if (applications.length === 0) {
+                    showState(
+                        container,
+                        "📄",
+                        "No applications yet",
+                        "Explore available jobs and apply for opportunities that match your skills.",
+                        false,
+                        true
+                    );
+                    return;
+                }
+
+                container.replaceChildren();
+
+                applications.forEach(function(application) {
+                    const card = document.createElement("article");
+                    card.className = "application-card";
+
+                    const top = document.createElement("div");
+                    top.className = "application-top";
+
+                    const jobInfo = document.createElement("div");
+
+                    const title = document.createElement("h2");
+                    title.className = "job-title";
+                    title.textContent = application.title || "Untitled position";
+
+                    const company = document.createElement("p");
+                    company.className = "company-name";
+                    company.textContent = application.company || "Company not specified";
+
+                    jobInfo.append(title, company);
+
+                    const status = document.createElement("span");
+                    const statusText = String(application.status || "Pending");
+                    status.className = "status status-" +
+                        statusText.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+                    status.textContent = statusText;
+
+                    top.append(jobInfo, status);
+
+                    const details = document.createElement("div");
+                    details.className = "application-details";
+
+                    addDetail(details, "Location", application.location || "Not specified");
+                    addDetail(details, "Applied On", application.applied_at || "Not available");
+
+                    card.append(top, details);
+                    container.appendChild(card);
+                });
+
+            } catch (error) {
+                console.error("Applications error:", error);
+                countElement.textContent = "—";
+
+                showState(
+                    container,
+                    "⚠️",
+                    "Connection problem",
+                    "Unable to connect to the server. Please check that the application is running and try again.",
+                    true
+                );
+            }
+        }
+
+        function addDetail(container, label, value) {
+            const item = document.createElement("div");
+            item.className = "detail-item";
+
+            const heading = document.createElement("strong");
+            heading.textContent = label;
+
+            const text = document.createElement("span");
+            text.textContent = value;
+
+            item.append(heading, text);
+            container.appendChild(item);
+        }
+
+        function showState(container, icon, heading, message, isError, showButton = false) {
+            container.replaceChildren();
+
+            const box = document.createElement("div");
+            box.className = "state-box" + (isError ? " error-state" : "");
+
+            const iconElement = document.createElement("div");
+            iconElement.className = "state-icon";
+            iconElement.textContent = icon;
+
+            const title = document.createElement("h2");
+            title.textContent = heading;
+
+            const description = document.createElement("p");
+            description.textContent = message;
+
+            box.append(iconElement, title, description);
+
+            if (showButton) {
+                const link = document.createElement("a");
+                link.href = "/jobs";
+                link.className = "btn btn-primary";
+                link.textContent = "Explore Jobs";
+                box.appendChild(link);
+            }
+
+            if (isError) {
+                const retry = document.createElement("button");
+                retry.type = "button";
+                retry.className = "btn btn-secondary";
+                retry.textContent = "Try Again";
+                retry.style.marginLeft = "8px";
+                retry.addEventListener("click", loadApplications);
+                box.appendChild(retry);
+            }
+
+            container.appendChild(box);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Find Jobs - Smart Job Portal</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f5f8f6;
+            color: #193b2b;
+        }
+
+        .jobs-container {
+            width: 100%;
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 32px 24px 50px;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 18px;
+            margin-bottom: 28px;
+        }
+
+        .page-label {
+            color: #087443;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .top-bar h1 {
+            margin: 0 0 8px;
+            color: #173b2b;
+            font-size: clamp(26px, 4vw, 34px);
+        }
+
+        .top-bar p {
+            margin: 0;
+            color: #6b7b71;
+            line-height: 1.6;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 16px;
+            background: white;
+            color: #087443;
+            border: 1px solid #dce8df;
+            border-radius: 9px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .back-button:hover {
+            background: #e7f5ed;
+        }
+
+        .search-box {
+            padding: 26px;
+            background: #ffffff;
+            border: 1px solid #e1ebe5;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(20, 65, 43, 0.05);
+        }
+
+        .search-heading {
+            margin-bottom: 20px;
+        }
+
+        .search-heading h2 {
+            margin: 0 0 6px;
+            font-size: 19px;
+            color: #193b2b;
+        }
+
+        .search-heading p {
+            margin: 0;
+            color: #718076;
+            font-size: 14px;
+        }
+
+        .search-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .search-field {
+            min-width: 0;
+        }
+
+        .search-field label {
+            display: block;
+            margin-bottom: 7px;
+            color: #345341;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .search-grid input {
+            width: 100%;
+            min-width: 0;
+            padding: 12px 13px;
+            border: 1px solid #d8e3dc;
+            border-radius: 9px;
+            background: #fbfdfb;
+            color: #24382d;
+            font: inherit;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .search-grid input:focus {
+            border-color: #087443;
+            box-shadow: 0 0 0 3px rgba(8, 116, 67, 0.10);
+            background: #ffffff;
+        }
+
+        .search-grid input::placeholder {
+            color: #9aa79f;
+        }
+
+        .search-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 22px;
+        }
+
+        .search-buttons button {
+            width: auto;
+            min-width: 120px;
+            padding: 11px 18px;
+            border: 1px solid #087443;
+            border-radius: 9px;
+            background: #087443;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .search-buttons button:hover {
+            background: #065f38;
+        }
+
+        .search-buttons .clear-button {
+            background: white;
+            color: #456451;
+            border-color: #d8e3dc;
+        }
+
+        .search-buttons .clear-button:hover {
+            background: #f0f6f2;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 32px 0 16px;
+        }
+
+        .results-header h2 {
+            margin: 0;
+            color: #193b2b;
+            font-size: 21px;
+        }
+
+        #message {
+            margin: 0;
+            color: #087443;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .job-list {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .job-card {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            padding: 23px;
+            background: white;
+            border: 1px solid #e1ebe5;
+            border-radius: 15px;
+            box-shadow: 0 5px 18px rgba(20, 65, 43, 0.04);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .job-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(20, 65, 43, 0.09);
+        }
+
+        .job-card h3 {
+            margin: 0 0 13px;
+            color: #173b2b;
+            font-size: 19px;
+            line-height: 1.4;
+            overflow-wrap: anywhere;
+        }
+
+        .job-company {
+            color: #087443;
+            font-weight: 600;
+        }
+
+        .job-card p {
+            margin: 8px 0;
+            color: #607267;
+            font-size: 14px;
+            line-height: 1.65;
+            overflow-wrap: anywhere;
+        }
+
+        .job-card p strong {
+            color: #334d3e;
+        }
+
+        .job-skills {
+            margin-top: 13px !important;
+            padding: 11px 12px;
+            border-radius: 9px;
+            background: #eef7f1;
+            color: #315b42 !important;
+        }
+
+        .job-description {
+            flex-grow: 1;
+        }
+
+        .apply-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            align-self: flex-start;
+            margin-top: 16px;
+            padding: 11px 18px;
+            background: #087443;
+            color: #ffffff;
+            border-radius: 9px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .apply-button:hover {
+            background: #065f38;
+        }
+
+        .empty-state {
+            grid-column: 1 / -1;
+            padding: 38px 20px;
+            border: 1px dashed #cadbd0;
+            border-radius: 14px;
+            background: #ffffff;
+            text-align: center;
+        }
+
+        .empty-state h3 {
+            margin: 0 0 8px;
+            color: #254a35;
+        }
+
+        .empty-state p {
+            margin: 0;
+            color: #718076;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 700px) {
+            .jobs-container {
+                padding: 24px 16px 40px;
+            }
+
+            .job-list {
+                grid-template-columns: 1fr;
+            }
+
+            .search-box {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .search-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .search-buttons {
+                flex-direction: column;
+            }
+
+            .search-buttons button {
+                width: 100%;
+            }
+
+            .top-bar {
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="jobs-container">
+
+        <header class="top-bar">
+            <div>
+                <div class="page-label">Career opportunities</div>
+                <h1>Find Your Next Job</h1>
+                <p>Discover opportunities that match your skills and goals.</p>
+            </div>
+
+            <a href="/dashboard" class="back-button">
+                ← Dashboard
+            </a>
+        </header>
+
+        <section class="search-box">
+            <div class="search-heading">
+                <h2>Search opportunities</h2>
+                <p>Use one or more filters to find relevant jobs.</p>
+            </div>
+
+            <div class="search-grid">
+
+                <div class="search-field">
+                    <label for="title">Job Title</label>
+                    <input
+                        type="text"
+                        id="title"
+                        placeholder="e.g. Python Developer"
+                    >
+                </div>
+
+                <div class="search-field">
+                    <label for="company">Company</label>
+                    <input
+                        type="text"
+                        id="company"
+                        placeholder="e.g. TCS"
+                    >
+                </div>
+
+                <div class="search-field">
+                    <label for="location">Location</label>
+                    <input
+                        type="text"
+                        id="location"
+                        placeholder="e.g. Hyderabad"
+                    >
+                </div>
+
+                <div class="search-field">
+                    <label for="skills">Skills</label>
+                    <input
+                        type="text"
+                        id="skills"
+                        placeholder="e.g. Python, SQL"
+                    >
+                </div>
+
+            </div>
+
+            <div class="search-buttons">
+                <button type="button" id="searchButton"
+                        onclick="searchJobs()">
+                    Search Jobs
+                </button>
+
+                <button type="button" class="clear-button"
+                        onclick="clearSearch()">
+                    Clear Filters
+                </button>
+            </div>
+        </section>
+
+        <section aria-label="Job search results">
+            <div class="results-header">
+                <h2>Available Jobs</h2>
+                <p id="message" role="status" aria-live="polite">
+                    Loading jobs...
+                </p>
+            </div>
+
+            <div id="jobList" class="job-list"></div>
+        </section>
+
+    </main>
+
+    <script>
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            window.location.replace("/login-page");
+        } else {
+            searchJobs();
+        }
+
+        async function searchJobs() {
+            const title = document.getElementById("title").value.trim();
+            const company = document.getElementById("company").value.trim();
+            const location = document.getElementById("location").value.trim();
+            const skills = document.getElementById("skills").value.trim();
+
+            const params = new URLSearchParams();
+
+            if (title) params.append("title", title);
+            if (company) params.append("company", company);
+            if (location) params.append("location", location);
+            if (skills) params.append("skills", skills);
+
+            const message = document.getElementById("message");
+            const jobList = document.getElementById("jobList");
+            const searchButton = document.getElementById("searchButton");
+
+            message.textContent = "Searching for jobs...";
+            message.style.color = "#718076";
+            jobList.innerHTML = "";
+            searchButton.disabled = true;
+            searchButton.textContent = "Searching...";
+
+            try {
+                const response = await fetch(
+                    "/api/jobs?" + params.toString(),
+                    {
+                        method: "GET",
+                        headers: {
+                            "Authorization": "Bearer " + token
+                        }
+                    }
+                );
+
+                const result = await response.json();
+
+                if (!response.ok || !result.success) {
+                    message.textContent =
+                        result.message || "Unable to search jobs.";
+                    message.style.color = "#c0392b";
+                    return;
+                }
+
+                if (!result.jobs || result.jobs.length === 0) {
+                    message.textContent = "No matching jobs found.";
+                    message.style.color = "#718076";
+
+                    jobList.innerHTML = `
+                        <div class="empty-state">
+                            <h3>No jobs found</h3>
+                            <p>
+                                Try different keywords or clear your filters
+                                to see more opportunities.
+                            </p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                message.textContent =
+                    result.jobs.length + " job(s) found";
+                message.style.color = "#087443";
+
+                result.jobs.forEach(function(job) {
+                    const card = document.createElement("article");
+                    card.className = "job-card";
+
+                    const titleElement = document.createElement("h3");
+                    titleElement.textContent = job.title || "Untitled Job";
+                    card.appendChild(titleElement);
+
+                    const companyElement = document.createElement("p");
+                    companyElement.innerHTML = "<strong>Company:</strong> ";
+                    const companyName = document.createElement("span");
+                    companyName.className = "job-company";
+                    companyName.textContent = job.company || "Not specified";
+                    companyElement.appendChild(companyName);
+                    card.appendChild(companyElement);
+
+                    const locationElement = document.createElement("p");
+                    locationElement.innerHTML = "<strong>Location:</strong> ";
+                    locationElement.appendChild(
+                        document.createTextNode(job.location || "Not specified")
+                    );
+                    card.appendChild(locationElement);
+
+                    const skillsElement = document.createElement("p");
+                    skillsElement.className = "job-skills";
+                    skillsElement.innerHTML = "<strong>Required Skills:</strong> ";
+                    skillsElement.appendChild(
+                        document.createTextNode(
+                            job.required_skills || "Not specified"
+                        )
+                    );
+                    card.appendChild(skillsElement);
+
+                    const descriptionElement = document.createElement("p");
+                    descriptionElement.className = "job-description";
+                    descriptionElement.innerHTML = "<strong>Description:</strong> ";
+                    descriptionElement.appendChild(
+                        document.createTextNode(
+                            job.description || "Not available"
+                        )
+                    );
+                    card.appendChild(descriptionElement);
+
+                    const salaryElement = document.createElement("p");
+                    salaryElement.innerHTML = "<strong>Salary:</strong> ";
+                    salaryElement.appendChild(
+                        document.createTextNode(job.salary || "Not specified")
+                    );
+                    card.appendChild(salaryElement);
+
+                    const applyLink = document.createElement("a");
+                    applyLink.href = "/apply/" + encodeURIComponent(job.job_id);
+                    applyLink.className = "apply-button";
+                    applyLink.textContent = "Apply Now →";
+                    card.appendChild(applyLink);
+
+                    jobList.appendChild(card);
+                });
+
+            } catch (error) {
+                message.textContent =
+                    "Something went wrong while searching.";
+                message.style.color = "#c0392b";
+                console.error("Job search error:", error);
+
+            } finally {
+                searchButton.disabled = false;
+                searchButton.textContent = "Search Jobs";
+            }
+        }
+
+        function clearSearch() {
+            document.getElementById("title").value = "";
+            document.getElementById("company").value = "";
+            document.getElementById("location").value = "";
+            document.getElementById("skills").value = "";
+
+            searchJobs();
+        }
+
+        document.querySelectorAll(".search-grid input").forEach(function(input) {
+            input.addEventListener("keydown", function(event) {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    searchJobs();
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
+```

@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Resume Analysis | Smart Job Portal</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        body {
+            background: #f5f8f6;
+            color: #18352a;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .analysis-navbar {
+            background: #ffffff;
+            border-bottom: 1px solid #e1ebe5;
+            padding: 18px 6%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .brand {
+            color: #087f5b;
+            font-size: 22px;
+            font-weight: 800;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+        }
+
+        .nav-links a {
+            color: #496358;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .nav-links a:hover {
+            color: #087f5b;
+        }
+
+        .analysis-container {
+            width: 90%;
+            max-width: 850px;
+            margin: 55px auto;
+        }
+
+        .page-heading {
+            margin-bottom: 25px;
+        }
+
+        .eyebrow {
+            color: #087f5b;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .page-heading h1 {
+            color: #173d2e;
+            font-size: clamp(28px, 4vw, 38px);
+            margin: 10px 0;
+        }
+
+        .page-heading p {
+            color: #687d73;
+            line-height: 1.7;
+            margin: 0;
+        }
+
+        .analysis-card {
+            background: #ffffff;
+            border: 1px solid #e1ebe5;
+            border-radius: 18px;
+            padding: 32px;
+            box-shadow: 0 12px 35px rgba(25, 70, 48, 0.06);
+        }
+
+        .result-heading {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 24px;
+        }
+
+        .result-icon {
+            width: 54px;
+            height: 54px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 15px;
+            background: #e4f6ec;
+            color: #087f5b;
+            font-size: 25px;
+            flex-shrink: 0;
+        }
+
+        .result-heading h2 {
+            color: #173d2e;
+            font-size: 20px;
+            margin: 0 0 6px;
+        }
+
+        .result-heading p {
+            color: #71847a;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .resume-name {
+            padding: 15px 17px;
+            margin: 0 0 25px;
+            background: #f7faf8;
+            border: 1px solid #e5eee8;
+            border-radius: 10px;
+            color: #40594c;
+            font-size: 14px;
+            overflow-wrap: anywhere;
+        }
+
+        .section-title {
+            color: #244a38;
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 14px;
+        }
+
+        .skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            min-height: 12px;
+        }
+
+        .skill {
+            display: inline-flex;
+            align-items: center;
+            background: #e5f6ec;
+            color: #08734f;
+            border: 1px solid #c9ead7;
+            padding: 9px 14px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .message {
+            display: none;
+            margin-top: 22px;
+            padding: 14px 16px;
+            border-radius: 10px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .message.error {
+            display: block;
+            background: #fff1f0;
+            border: 1px solid #ffd8d5;
+            color: #a52c25;
+        }
+
+        .message.success {
+            display: block;
+            background: #eaf8ef;
+            border: 1px solid #ccebd7;
+            color: #176b42;
+        }
+
+        .analysis-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        .action-button {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            padding: 12px 18px;
+            border-radius: 9px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 700;
+            transition: 0.2s ease;
+        }
+
+        .primary-button {
+            background: #087f5b;
+            color: #ffffff;
+        }
+
+        .primary-button:hover {
+            background: #066747;
+            transform: translateY(-1px);
+        }
+
+        .secondary-button {
+            background: #ffffff;
+            color: #087f5b;
+            border: 1px solid #b9dfc9;
+        }
+
+        .secondary-button:hover {
+            background: #f0faf4;
+        }
+
+        .loading-indicator {
+            color: #71847a;
+            font-size: 14px;
+            padding: 10px 0;
+        }
+
+        .footer-note {
+            margin-top: 24px;
+            color: #83948b;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            .analysis-navbar {
+                padding: 16px 5%;
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .nav-links {
+                gap: 18px;
+            }
+
+            .analysis-container {
+                margin: 32px auto;
+            }
+
+            .analysis-card {
+                padding: 22px 18px;
+            }
+
+            .analysis-actions {
+                flex-direction: column;
+            }
+
+            .action-button {
+                width: 100%;
+                box-sizing: border-box;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="analysis-navbar">
+        <a href="/dashboard" class="brand">Smart Job Portal</a>
+
+        <div class="nav-links">
+            <a href="/dashboard">Dashboard</a>
+            <a href="/jobs">Find Jobs</a>
+            <a href="/resume">My Resume</a>
+            <a href="/profile">My Profile</a>
+        </div>
+    </nav>
+
+    <main class="analysis-container">
+
+        <div class="page-heading">
+            <div class="eyebrow">Career tools</div>
+            <h1>Resume Analysis</h1>
+            <p>
+                Discover the skills identified in your resume and use them
+                to guide your next career opportunity.
+            </p>
+        </div>
+
+        <section class="analysis-card">
+
+            <div class="result-heading">
+                <div class="result-icon" aria-hidden="true">✓</div>
+
+                <div>
+                    <h2>Your analysis results</h2>
+                    <p>Here's what we found in your uploaded resume.</p>
+                </div>
+            </div>
+
+            <p class="resume-name" id="resumeName">
+                Loading your resume details...
+            </p>
+
+            <div class="section-title">Detected skills</div>
+
+            <div id="skills" class="skills"></div>
+
+            <div id="loading" class="loading-indicator">
+                Analyzing your resume...
+            </div>
+
+            <div id="message" class="message" role="status"
+                 aria-live="polite"></div>
+
+            <div class="analysis-actions">
+                <a href="/resume" class="action-button primary-button">
+                    Upload Another Resume
+                </a>
+
+                <a href="/jobs" class="action-button secondary-button">
+                    Explore Jobs
+                </a>
+            </div>
+
+        </section>
+
+        <p class="footer-note">
+            Smart Job Portal · Helping you take the next step in your career
+        </p>
+
+    </main>
+
+    <script>
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            window.location.replace("/login-page");
+        } else {
+            analyzeResume();
+        }
+
+        async function analyzeResume() {
+            const skillsContainer = document.getElementById("skills");
+            const resumeName = document.getElementById("resumeName");
+            const message = document.getElementById("message");
+            const loading = document.getElementById("loading");
+
+            loading.style.display = "block";
+            message.className = "message";
+            message.textContent = "";
+            skillsContainer.replaceChildren();
+
+            try {
+                const response = await fetch("/analyze-resume", {
+                    method: "GET",
+                    headers: {
+                        "Authorization": "Bearer " + token
+                    }
+                });
+
+                const result = await response.json();
+
+                if (!response.ok || !result.success) {
+                    message.className = "message error";
+                    message.textContent =
+                        result.message || "Unable to analyze resume.";
+                    return;
+                }
+
+                resumeName.textContent =
+                    "Resume: " + (result.file_name || "Uploaded resume");
+
+                const detectedSkills = Array.isArray(result.skills)
+                    ? result.skills
+                    : [];
+
+                if (detectedSkills.length === 0) {
+                    message.className = "message error";
+                    message.textContent =
+                        "No known skills were detected in your resume. " +
+                        "Try uploading a resume that clearly lists your skills.";
+                    return;
+                }
+
+                detectedSkills.forEach(function(skill) {
+                    const skillElement = document.createElement("span");
+                    skillElement.className = "skill";
+                    skillElement.textContent = skill;
+                    skillsContainer.appendChild(skillElement);
+                });
+
+                message.className = "message success";
+                message.textContent =
+                    "Analysis complete! " + detectedSkills.length +
+                    " skill" + (detectedSkills.length === 1 ? "" : "s") +
+                    " detected.";
+
+            } catch (error) {
+                message.className = "message error";
+                message.textContent =
+                    "Unable to connect to the server. Please try again.";
+
+                console.error("Resume analysis error:", error);
+            } finally {
+                loading.style.display = "none";
+            }
+        }
+    </script>
+
+</body>
+</html>

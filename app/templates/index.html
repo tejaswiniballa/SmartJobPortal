@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartJob Portal | Find Your Future</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #f7faf9;
+            color: #18352e;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 22px 8%;
+            background: white;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+        }
+
+        .logo {
+            font-size: 25px;
+            font-weight: 800;
+            color: #087f5b;
+            white-space: nowrap;
+            letter-spacing: -0.7px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        a {
+            text-decoration: none;
+            color: #40574f;
+            font-weight: 600;
+        }
+
+        .nav-button,
+        .primary-button {
+            background: #087f5b;
+            color: white;
+            padding: 12px 21px;
+            border-radius: 9px;
+            display: inline-block;
+        }
+
+        .nav-button:hover,
+        .primary-button:hover {
+            background: #066548;
+        }
+
+        .hero {
+            padding: 95px 8% 85px;
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 50px;
+            align-items: center;
+            min-height: 540px;
+        }
+
+        .tag {
+            display: inline-block;
+            background: #dff5eb;
+            color: #087f5b;
+            padding: 9px 14px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 24px;
+        }
+
+        h1 {
+            font-size: clamp(40px, 5vw, 64px);
+            line-height: 1.12;
+            letter-spacing: -2px;
+            margin-bottom: 22px;
+        }
+
+        h1 span {
+            color: #087f5b;
+        }
+
+        .hero p {
+            color: #64766f;
+            font-size: 18px;
+            line-height: 1.8;
+            max-width: 540px;
+            margin-bottom: 30px;
+        }
+
+        .secondary-button {
+            display: inline-block;
+            margin-left: 12px;
+            padding: 12px 18px;
+            border: 1px solid #d4e2dc;
+            border-radius: 9px;
+        }
+
+        .visual {
+            background: #e1f4eb;
+            border-radius: 30px;
+            min-height: 330px;
+            padding: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .visual-card {
+            width: 100%;
+            max-width: 330px;
+            background: white;
+            padding: 27px;
+            border-radius: 20px;
+            box-shadow: 0 18px 45px rgba(14, 79, 57, 0.12);
+        }
+
+        .visual-card h3 {
+            margin-bottom: 18px;
+        }
+
+        .job-item {
+            border: 1px solid #e6eee9;
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 12px;
+        }
+
+        .job-item strong {
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .job-item small {
+            color: #718078;
+        }
+
+        .features {
+            padding: 55px 8% 75px;
+            background: white;
+            text-align: center;
+        }
+
+        .features h2 {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .features-intro {
+            color: #718078;
+            margin-bottom: 35px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 22px;
+            text-align: left;
+        }
+
+        .feature {
+            padding: 27px;
+            border: 1px solid #e7efea;
+            border-radius: 16px;
+            background: #fcfefd;
+        }
+
+        .feature-icon {
+            font-size: 28px;
+            margin-bottom: 16px;
+        }
+
+        .feature h3 {
+            margin-bottom: 10px;
+        }
+
+        .feature p {
+            color: #718078;
+            line-height: 1.7;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #718078;
+            font-size: 14px;
+        }
+
+        @media (max-width: 760px) {
+            nav {
+                padding: 18px 5%;
+                flex-wrap: wrap;
+                gap: 16px;
+            }
+
+            .nav-links {
+                gap: 13px;
+                flex-wrap: wrap;
+            }
+
+            .hero {
+                grid-template-columns: 1fr;
+                padding: 60px 6%;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .secondary-button {
+                margin: 12px 0 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <div class="logo">SmartJob Portal</div>
+
+        <div class="nav-links">
+            <a href="#features">Features</a>
+
+            <a href="{{ url_for('login_page') }}">Login</a>
+
+            <a href="{{ url_for('register_page') }}" class="nav-button">
+                Get Started
+            </a>
+        </div>
+    </nav>
+
+    <main>
+        <section class="hero">
+            <div>
+                <span class="tag">
+                    ✨ Your next opportunity starts here
+                </span>
+
+                <h1>
+                    Build your career.<br>
+                    Find your <span>future.</span>
+                </h1>
+
+                <p>
+                    Discover opportunities that match your skills, upload your
+                    resume, and take the next step toward your dream career with
+                    your Smart Job Application Portal.
+                </p>
+
+                <a href="{{ url_for('register_page') }}"
+                   class="primary-button">
+                    Get Started Free →
+                </a>
+
+                <a href="{{ url_for('login_page') }}"
+                   class="secondary-button">
+                    Sign In
+                </a>
+            </div>
+
+            <div class="visual">
+                <div class="visual-card">
+                    <h3>🚀 Your career journey</h3>
+
+                    <div class="job-item">
+                        <strong>💼 Discover opportunities</strong>
+                        <small>Explore jobs that fit your goals.</small>
+                    </div>
+
+                    <div class="job-item">
+                        <strong>📄 Analyze your resume</strong>
+                        <small>Highlight your skills and strengths.</small>
+                    </div>
+
+                    <div class="job-item">
+                        <strong>🎯 Find your match</strong>
+                        <small>Get personalized job recommendations.</small>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="features" id="features">
+            <h2>Everything you need to move forward</h2>
+
+            <p class="features-intro">
+                One platform to make your job search smarter.
+            </p>
+
+            <div class="feature-grid">
+                <div class="feature">
+                    <div class="feature-icon">🔎</div>
+                    <h3>Explore Jobs</h3>
+                    <p>
+                        Browse opportunities and discover roles aligned with
+                        your career goals.
+                    </p>
+                </div>
+
+                <div class="feature">
+                    <div class="feature-icon">📄</div>
+                    <h3>Resume Analysis</h3>
+                    <p>
+                        Upload your PDF resume and review the skills identified
+                        by the portal.
+                    </p>
+                </div>
+
+                <div class="feature">
+                    <div class="feature-icon">🎯</div>
+                    <h3>Smart Recommendations</h3>
+                    <p>
+                        Explore job suggestions based on your profile and
+                        available opportunities.
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        © 2026 SmartJob Portal. Built for your next opportunity.
+    </footer>
+</body>
+</html>

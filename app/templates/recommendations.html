@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Job Recommendations | Smart Job Portal</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        body {
+            margin: 0;
+            background: #f5f8f6;
+            color: #18352a;
+            font-family: Arial, sans-serif;
+        }
+
+        .recommend-navbar {
+            background: #fff;
+            border-bottom: 1px solid #e1ebe5;
+            padding: 18px 6%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .brand {
+            color: #087f5b;
+            text-decoration: none;
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+        .nav-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 22px;
+        }
+
+        .nav-links a {
+            color: #496358;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .nav-links a:hover {
+            color: #087f5b;
+        }
+
+        .page-container {
+            width: 90%;
+            max-width: 1050px;
+            margin: 42px auto;
+        }
+
+        .page-heading {
+            margin-bottom: 28px;
+        }
+
+        .eyebrow {
+            color: #087f5b;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .page-heading h1 {
+            margin: 10px 0;
+            color: #173d2e;
+            font-size: clamp(28px, 4vw, 38px);
+        }
+
+        .page-heading p {
+            color: #687d73;
+            line-height: 1.7;
+            margin: 0;
+        }
+
+        .skills-panel {
+            padding: 24px;
+            margin-bottom: 32px;
+            background: #fff;
+            border: 1px solid #e1ebe5;
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(25, 70, 48, 0.04);
+        }
+
+        .panel-heading {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            margin-bottom: 16px;
+        }
+
+        .panel-icon {
+            width: 44px;
+            height: 44px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #e5f6ec;
+            color: #087f5b;
+            border-radius: 12px;
+            font-size: 21px;
+        }
+
+        .panel-heading h2 {
+            margin: 0 0 5px;
+            font-size: 18px;
+            color: #214a37;
+        }
+
+        .panel-heading p {
+            margin: 0;
+            font-size: 13px;
+            color: #71847a;
+        }
+
+        .skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 9px;
+        }
+
+        .skill {
+            display: inline-flex;
+            padding: 8px 13px;
+            border-radius: 30px;
+            background: #e5f6ec;
+            color: #08734f;
+            border: 1px solid #c9ead7;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .section-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .section-heading h2 {
+            color: #173d2e;
+            font-size: 22px;
+            margin: 0;
+        }
+
+        .job-count {
+            color: #087f5b;
+            background: #e5f6ec;
+            border-radius: 30px;
+            padding: 7px 12px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .job-card {
+            background: #fff;
+            border: 1px solid #e1ebe5;
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 18px;
+            box-shadow: 0 8px 25px rgba(25, 70, 48, 0.04);
+            transition: border-color 0.2s, transform 0.2s;
+        }
+
+        .job-card:hover {
+            border-color: #b8dfc9;
+            transform: translateY(-2px);
+        }
+
+        .job-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 18px;
+        }
+
+        .job-card h3 {
+            margin: 0 0 8px;
+            color: #173d2e;
+            font-size: 21px;
+            overflow-wrap: anywhere;
+        }
+
+        .company-name {
+            color: #526a5e;
+            font-weight: 700;
+            margin: 0;
+            font-size: 14px;
+        }
+
+        .match {
+            flex-shrink: 0;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: #e5f6ec;
+            color: #08734f;
+            border: 1px solid #c9ead7;
+            border-radius: 9px;
+            padding: 9px 11px;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .job-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 22px;
+            margin: 20px 0;
+            color: #526a5e;
+            font-size: 13px;
+        }
+
+        .job-meta span {
+            overflow-wrap: anywhere;
+        }
+
+        .job-label {
+            display: block;
+            color: #274c39;
+            font-size: 13px;
+            font-weight: 800;
+            margin-bottom: 7px;
+        }
+
+        .job-description {
+            color: #687d73;
+            font-size: 14px;
+            line-height: 1.7;
+            margin: 0 0 18px;
+            white-space: pre-line;
+            overflow-wrap: anywhere;
+        }
+
+        .required-skills {
+            color: #526a5e;
+            font-size: 13px;
+            line-height: 1.7;
+            margin-bottom: 18px;
+            overflow-wrap: anywhere;
+        }
+
+        .apply-button {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            padding: 12px 20px;
+            background: #087f5b;
+            color: #fff;
+            border: none;
+            border-radius: 9px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .apply-button:hover {
+            background: #066747;
+        }
+
+        .apply-button:disabled {
+            background: #9bb9aa;
+            cursor: not-allowed;
+        }
+
+        .message {
+            padding: 22px;
+            border: 1px solid #e1ebe5;
+            background: #fff;
+            color: #526a5e;
+            border-radius: 13px;
+            line-height: 1.7;
+            margin-bottom: 18px;
+        }
+
+        .message.error {
+            background: #fff1f0;
+            border-color: #ffd8d5;
+            color: #a52c25;
+        }
+
+        .message.success {
+            background: #eaf8ef;
+            border-color: #ccebd7;
+            color: #176b42;
+        }
+
+        .message a {
+            color: #087f5b;
+            font-weight: 700;
+        }
+
+        .loading {
+            color: #71847a;
+            padding: 20px 0;
+            font-size: 14px;
+        }
+
+        .footer-note {
+            text-align: center;
+            color: #83948b;
+            font-size: 12px;
+            margin: 30px 0;
+        }
+
+        @media (max-width: 650px) {
+            .recommend-navbar {
+                align-items: flex-start;
+                flex-direction: column;
+                padding: 16px 5%;
+            }
+
+            .nav-links {
+                gap: 16px;
+            }
+
+            .page-container {
+                margin: 30px auto;
+            }
+
+            .skills-panel,
+            .job-card {
+                padding: 19px;
+            }
+
+            .job-top {
+                flex-direction: column;
+            }
+
+            .match {
+                align-self: flex-start;
+            }
+
+            .apply-button {
+                width: 100%;
+                box-sizing: border-box;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="recommend-navbar">
+        <a href="/dashboard" class="brand">Smart Job Portal</a>
+
+        <div class="nav-links">
+            <a href="/dashboard">Dashboard</a>
+            <a href="/jobs">Find Jobs</a>
+            <a href="/resume">My Resume</a>
+            <a href="/profile">My Profile</a>
+        </div>
+    </nav>
+
+    <main class="page-container">
+
+        <header class="page-heading">
+            <div class="eyebrow">Personalized for you</div>
+            <h1>Recommended Jobs</h1>
+            <p>
+                Explore opportunities matched to the skills detected
+                in your resume.
+            </p>
+        </header>
+
+        <section class="skills-panel">
+            <div class="panel-heading">
+                <div class="panel-icon" aria-hidden="true">✦</div>
+                <div>
+                    <h2>Your Resume Skills</h2>
+                    <p>Skills used to find relevant job opportunities</p>
+                </div>
+            </div>
+
+            <div id="skills" class="skills">
+                <span class="loading">Loading your skills...</span>
+            </div>
+        </section>
+
+        <section>
+            <div class="section-heading">
+                <h2>Best Matches for You</h2>
+                <span id="jobCount" class="job-count">Loading...</span>
+            </div>
+
+            <div id="recommendations">
+                <div class="loading">Finding jobs that match your skills...</div>
+            </div>
+        </section>
+
+        <p class="footer-note">
+            Smart Job Portal · Your next career opportunity starts here
+        </p>
+
+    </main>
+
+    <script>
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            window.location.replace("/login-page");
+        } else {
+            loadRecommendations();
+        }
+
+        async function loadRecommendations() {
+            const skillsContainer = document.getElementById("skills");
+            const recommendationsContainer =
+                document.getElementById("recommendations");
+            const jobCount = document.getElementById("jobCount");
+
+            try {
+                const response = await fetch("/api/recommendations", {
+                    method: "GET",
+                    headers: {
+                        "Authorization": "Bearer " + token
+                    }
+                });
+
+                const result = await response.json();
+
+                if (!response.ok || !result.success) {
+                    skillsContainer.textContent = "Skills unavailable.";
+                    jobCount.textContent = "Unavailable";
+
+                    showMessage(
+                        recommendationsContainer,
+                        result.message || "Unable to load recommendations.",
+                        "error"
+                    );
+                    return;
+                }
+
+                skillsContainer.replaceChildren();
+
+                const skills = Array.isArray(result.skills)
+                    ? result.skills
+                    : [];
+
+                if (skills.length === 0) {
+                    skillsContainer.textContent = "No skills detected.";
+                } else {
+                    skills.forEach(function(skill) {
+                        const element = document.createElement("span");
+                        element.className = "skill";
+                        element.textContent = skill;
+                        skillsContainer.appendChild(element);
+                    });
+                }
+
+                recommendationsContainer.replaceChildren();
+
+                const recommendations = Array.isArray(result.recommendations)
+                    ? result.recommendations
+                    : [];
+
+                jobCount.textContent =
+                    recommendations.length + " " +
+                    (recommendations.length === 1 ? "match" : "matches");
+
+                if (recommendations.length === 0) {
+                    showMessage(
+                        recommendationsContainer,
+                        "No matching jobs found yet. Try updating your resume " +
+                        "with additional skills, then check your recommendations again.",
+                        "normal"
+                    );
+                    return;
+                }
+
+                recommendations.forEach(function(job) {
+                    const card = document.createElement("article");
+                    card.className = "job-card";
+
+                    const top = document.createElement("div");
+                    top.className = "job-top";
+
+                    const titleGroup = document.createElement("div");
+
+                    const title = document.createElement("h3");
+                    title.textContent = job.title || "Untitled position";
+
+                    const company = document.createElement("p");
+                    company.className = "company-name";
+                    company.textContent = job.company || "Company not specified";
+
+                    titleGroup.append(title, company);
+
+                    const match = document.createElement("span");
+                    match.className = "match";
+
+                    const percentage = Number(job.match_percentage);
+                    match.textContent =
+                        (Number.isFinite(percentage) ? percentage : 0) +
+                        "% Skill Match";
+
+                    top.append(titleGroup, match);
+                    card.appendChild(top);
+
+                    const meta = document.createElement("div");
+                    meta.className = "job-meta";
+
+                    const location = document.createElement("span");
+                    location.textContent =
+                        "📍 " + (job.location || "Location not specified");
+
+                    const salary = document.createElement("span");
+                    salary.textContent =
+                        "💼 Salary: " + (job.salary || "Not specified");
+
+                    meta.append(location, salary);
+                    card.appendChild(meta);
+
+                    const skillsLabel = document.createElement("span");
+                    skillsLabel.className = "job-label";
+                    skillsLabel.textContent = "Required Skills";
+
+                    const requiredSkills = document.createElement("div");
+                    requiredSkills.className = "required-skills";
+                    requiredSkills.textContent =
+                        job.required_skills || "Not specified";
+
+                    card.append(skillsLabel, requiredSkills);
+
+                    if (job.description) {
+                        const descriptionLabel = document.createElement("span");
+                        descriptionLabel.className = "job-label";
+                        descriptionLabel.textContent = "About the role";
+
+                        const description = document.createElement("p");
+                        description.className = "job-description";
+                        description.textContent = job.description;
+
+                        card.append(descriptionLabel, description);
+                    }
+
+                    const applyButton = document.createElement("button");
+                    applyButton.className = "apply-button";
+                    applyButton.textContent = "Apply Now";
+
+                    applyButton.addEventListener("click", function() {
+                        applyForJob(job.job_id, applyButton);
+                    });
+
+                    card.appendChild(applyButton);
+                    recommendationsContainer.appendChild(card);
+                });
+
+            } catch (error) {
+                skillsContainer.textContent = "Unable to load skills.";
+                jobCount.textContent = "Unavailable";
+
+                showMessage(
+                    recommendationsContainer,
+                    "Unable to connect to the server. Please try again.",
+                    "error"
+                );
+
+                console.error("Recommendation error:", error);
+            }
+        }
+
+        async function applyForJob(jobId, button) {
+            if (!token) {
+                window.location.replace("/login-page");
+                return;
+            }
+
+            if (jobId === undefined || jobId === null) {
+                alert("This job cannot be applied for right now.");
+                return;
+            }
+
+            const originalText = button.textContent;
+            button.disabled = true;
+            button.textContent = "Submitting...";
+
+            try {
+                const response = await fetch(
+                    `/apply/${encodeURIComponent(jobId)}`,
+                    {
+                        method: "POST",
+                        headers: {
+                            "Authorization": "Bearer " + token
+                        }
+                    }
+                );
+
+                const result = await response.json();
+
+                if (!response.ok || !result.success) {
+                    alert(result.message || "Unable to apply for this job.");
+                    return;
+                }
+
+                button.textContent = "Application Submitted";
+                alert("Application submitted successfully!");
+
+            } catch (error) {
+                console.error("Application error:", error);
+                alert("Unable to connect to the server. Please try again.");
+            } finally {
+                if (button.textContent !== "Application Submitted") {
+                    button.disabled = false;
+                    button.textContent = originalText;
+                }
+            }
+        }
+
+        function showMessage(container, text, type) {
+            const message = document.createElement("div");
+            message.className =
+                type === "error" ? "message error" : "message";
+            message.textContent = text;
+            container.replaceChildren(message);
+        }
+    </script>
+
+</body>
+</html>

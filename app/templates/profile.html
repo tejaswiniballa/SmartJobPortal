@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | Smart Job Portal</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background: #f5f8f6;
+            color: #243b31;
+        }
+
+        nav {
+            background: #123d2d;
+            color: white;
+            padding: 17px 6%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            box-shadow: 0 3px 15px rgba(20, 60, 43, .12);
+        }
+
+        nav h2 {
+            margin: 0;
+            font-size: 21px;
+            letter-spacing: -.4px;
+        }
+
+        nav a {
+            color: #e7f5eb;
+            text-decoration: none;
+            margin-left: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        nav a:hover {
+            color: #a8edbd;
+        }
+
+        .container {
+            width: min(1000px, 92%);
+            margin: 36px auto;
+        }
+
+        .page-intro {
+            margin-bottom: 23px;
+        }
+
+        .page-intro h1 {
+            margin: 0 0 8px;
+            color: #173f2f;
+            font-size: 30px;
+        }
+
+        .page-intro p {
+            margin: 0;
+            color: #718078;
+            line-height: 1.6;
+        }
+
+        .profile-card {
+            background: white;
+            padding: 30px;
+            border: 1px solid #e1ebe4;
+            border-radius: 18px;
+            box-shadow: 0 8px 28px rgba(23, 63, 47, .05);
+        }
+
+        .profile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 18px;
+            flex-wrap: wrap;
+            padding-bottom: 23px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid #edf1ee;
+        }
+
+        .profile-header h2 {
+            margin: 0 0 7px;
+            color: #173f2f;
+            font-size: 21px;
+        }
+
+        .profile-header p {
+            margin: 0;
+            color: #78867e;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .avatar {
+            width: 76px;
+            height: 76px;
+            flex-shrink: 0;
+            border-radius: 22px;
+            background: linear-gradient(135deg, #d9f5e2, #b8e6c8);
+            color: #176641;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            font-weight: 800;
+        }
+
+        .completion-card {
+            background: #f7fbf8;
+            border: 1px solid #dcebe0;
+            border-radius: 14px;
+            padding: 22px;
+            margin-bottom: 28px;
+        }
+
+        .completion-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 17px;
+        }
+
+        .completion-top h3 {
+            margin: 0 0 7px;
+            color: #1b4935;
+            font-size: 17px;
+        }
+
+        .completion-top p {
+            margin: 0;
+            color: #718078;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .completion-percent {
+            font-size: 27px;
+            font-weight: 800;
+            color: #198754;
+            white-space: nowrap;
+        }
+
+        .progress-track {
+            height: 11px;
+            background: #e1eae4;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #198754, #42b978);
+            border-radius: 20px;
+            transition: width .35s ease;
+        }
+
+        .completion-label {
+            margin: 19px 0 12px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #365a46;
+        }
+
+        .completion-checklist {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .completion-checklist li {
+            color: #78867e;
+            font-size: 13px;
+        }
+
+        .completion-checklist li.complete {
+            color: #198754;
+            font-weight: 600;
+        }
+
+        .section-title {
+            margin: 0 0 21px;
+            color: #214735;
+            font-size: 18px;
+        }
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 21px;
+        }
+
+        .field {
+            min-width: 0;
+        }
+
+        .field.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            color: #365343;
+            margin-bottom: 9px;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 13px 14px;
+            border: 1px solid #d7e2da;
+            border-radius: 10px;
+            background: #fff;
+            color: #263d30;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color .2s, box-shadow .2s;
+        }
+
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #27935d;
+            box-shadow: 0 0 0 3px rgba(39, 147, 93, .12);
+        }
+
+        input[readonly] {
+            background: #f3f6f4;
+            color: #718078;
+            cursor: default;
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+
+        .hint {
+            color: #849087;
+            font-size: 12px;
+            line-height: 1.5;
+            margin-top: 7px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 11px;
+            flex-wrap: wrap;
+            margin-top: 27px;
+            padding-top: 23px;
+            border-top: 1px solid #edf1ee;
+        }
+
+        button {
+            border: none;
+            border-radius: 9px;
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            transition: background .2s, transform .2s;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-1px);
+        }
+
+        .primary {
+            background: #198754;
+            color: white;
+        }
+
+        .primary:hover:not(:disabled) {
+            background: #126b42;
+        }
+
+        .secondary {
+            background: #edf3ee;
+            color: #355543;
+        }
+
+        .secondary:hover:not(:disabled) {
+            background: #dfeae2;
+        }
+
+        button:disabled {
+            opacity: .6;
+            cursor: wait;
+        }
+
+        #message {
+            margin: 18px 0 0;
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 650px) {
+            nav {
+                padding: 17px 5%;
+            }
+
+            nav a {
+                margin: 0 13px 0 0;
+            }
+
+            .container {
+                margin: 25px auto;
+            }
+
+            .profile-card {
+                padding: 20px;
+            }
+
+            .page-intro h1 {
+                font-size: 26px;
+            }
+
+            .profile-grid {
+                grid-template-columns: 1fr;
+                gap: 19px;
+            }
+
+            .field.full-width {
+                grid-column: auto;
+            }
+
+            .completion-checklist {
+                grid-template-columns: 1fr;
+            }
+
+            .completion-card {
+                padding: 17px;
+            }
+
+            .completion-percent {
+                font-size: 23px;
+            }
+
+            .actions button {
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <h2>🌿 Smart Job Portal</h2>
+        <div>
+            <a href="/dashboard">Dashboard</a>
+            <a href="/jobs">Jobs</a>
+            <a href="/applications">My Applications</a>
+        </div>
+    </nav>
+
+    <main class="container">
+        <div class="page-intro">
+            <h1>My Profile</h1>
+            <p>Manage your personal details and professional skills in one place.</p>
+        </div>
+
+        <section class="profile-card">
+            <div class="profile-header">
+                <div>
+                    <h2>Personal Information</h2>
+                    <p>Keep your profile updated to help employers understand your background.</p>
+                </div>
+                <div class="avatar" id="avatar" aria-label="Profile initial">U</div>
+            </div>
+
+            <div class="completion-card">
+                <div class="completion-top">
+                    <div>
+                        <h3>Profile Completion</h3>
+                        <p id="completionMessage">
+                            Complete your profile to improve your job matches.
+                        </p>
+                    </div>
+                    <div class="completion-percent" id="completionPercent">0%</div>
+                </div>
+
+                <div
+                    class="progress-track"
+                    id="completionProgress"
+                    role="progressbar"
+                    aria-label="Profile completion"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                    aria-valuenow="0"
+                >
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+
+                <p class="completion-label">Profile checklist</p>
+                <ul id="completionChecklist" class="completion-checklist"></ul>
+            </div>
+
+            <h3 class="section-title">Your Details</h3>
+
+            <form id="profileForm">
+                <div class="profile-grid">
+                    <div class="field">
+                        <label for="name">Full Name</label>
+                        <input
+                            id="name"
+                            name="name"
+                            type="text"
+                            maxlength="100"
+                            autocomplete="name"
+                            required
+                            readonly
+                        >
+                    </div>
+
+                    <div class="field">
+                        <label for="email">Email Address</label>
+                        <input
+                            id="email"
+                            name="email"
+                            type="email"
+                            autocomplete="email"
+                            readonly
+                        >
+                        <div class="hint">Your email address cannot be changed here.</div>
+                    </div>
+
+                    <div class="field">
+                        <label for="mobile">Mobile Number</label>
+                        <input
+                            id="mobile"
+                            name="mobile"
+                            type="tel"
+                            maxlength="20"
+                            autocomplete="tel"
+                            readonly
+                        >
+                    </div>
+
+                    <div class="field">
+                        <label for="qualification">Qualification</label>
+                        <input
+                            id="qualification"
+                            name="qualification"
+                            type="text"
+                            maxlength="200"
+                            placeholder="e.g. B.Tech in Computer Science"
+                            readonly
+                        >
+                    </div>
+
+                    <div class="field full-width">
+                        <label for="skills">Professional Skills</label>
+                        <textarea
+                            id="skills"
+                            name="skills"
+                            maxlength="3000"
+                            placeholder="e.g. Python, Flask, MySQL, HTML, CSS"
+                            readonly
+                        ></textarea>
+                        <div class="hint">
+                            Separate your skills with commas.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <button type="button" class="primary" id="editButton">
+                        ✏️ Edit Profile
+                    </button>
+
+                    <button type="submit" class="primary" id="saveButton" hidden>
+                        Save Changes
+                    </button>
+
+                    <button type="button" class="secondary" id="cancelButton" hidden>
+                        Cancel
+                    </button>
+                </div>
+
+                <p id="message" role="status" aria-live="polite"></p>
+            </form>
+        </section>
+    </main>
+
+    <script>
+        const form = document.getElementById("profileForm");
+        const fields = ["name", "mobile", "qualification", "skills"];
+
+        const editButton = document.getElementById("editButton");
+        const saveButton = document.getElementById("saveButton");
+        const cancelButton = document.getElementById("cancelButton");
+        const message = document.getElementById("message");
+
+        let originalProfile = {};
+        let isEditing = false;
+
+        function showMessage(text, isError = false) {
+            message.textContent = text;
+            message.style.color = isError ? "#c93636" : "#198754";
+        }
+
+        function setEditing(editing) {
+            isEditing = editing;
+
+            fields.forEach(id => {
+                document.getElementById(id).readOnly = !editing;
+            });
+
+            editButton.hidden = editing;
+            saveButton.hidden = !editing;
+            cancelButton.hidden = !editing;
+        }
+
+        function snapshotProfile() {
+            const snapshot = {};
+
+            fields.forEach(id => {
+                snapshot[id] = document.getElementById(id).value;
+            });
+
+            return snapshot;
+        }
+
+        function restoreProfile(profile) {
+            fields.forEach(id => {
+                document.getElementById(id).value = profile[id] || "";
+            });
+
+            updateAvatar();
+            updateProfileCompletion();
+        }
+
+        function updateAvatar() {
+            const name = document.getElementById("name").value.trim();
+            document.getElementById("avatar").textContent =
+                name ? name.charAt(0).toUpperCase() : "U";
+        }
+
+        function updateProfileCompletion() {
+            const checks = [
+                {
+                    id: "name",
+                    label: "Full name",
+                    complete: value => value.trim().length > 0
+                },
+                {
+                    id: "email",
+                    label: "Email address",
+                    complete: value =>
+                        /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())
+                },
+                {
+                    id: "mobile",
+                    label: "Mobile number",
+                    complete: value => value.trim().length > 0
+                },
+                {
+                    id: "qualification",
+                    label: "Qualification",
+                    complete: value => value.trim().length > 0
+                },
+                {
+                    id: "skills",
+                    label: "Skills",
+                    complete: value => value.trim().length > 0
+                }
+            ];
+
+            const completed = checks.filter(item => {
+                const value = document.getElementById(item.id).value;
+                return item.complete(value);
+            }).length;
+
+            const percentage = Math.round((completed / checks.length) * 100);
+
+            document.getElementById("completionPercent").textContent =
+                percentage + "%";
+
+            document.getElementById("progressFill").style.width =
+                percentage + "%";
+
+            document.getElementById("completionProgress").setAttribute(
+                "aria-valuenow",
+                percentage
+            );
+
+            document.getElementById("completionMessage").textContent =
+                percentage === 100
+                    ? "Excellent! All profile fields are complete."
+                    : `${completed} of ${checks.length} profile fields completed.`;
+
+            const checklist = document.getElementById("completionChecklist");
+            checklist.replaceChildren();
+
+            checks.forEach(item => {
+                const value = document.getElementById(item.id).value;
+                const isComplete = item.complete(value);
+                const li = document.createElement("li");
+
+                li.className = isComplete ? "complete" : "";
+                li.textContent =
+                    `${isComplete ? "✓" : "○"} ${item.label}`;
+
+                checklist.appendChild(li);
+            });
+        }
+
+        async function apiRequest(url, options = {}) {
+            const token = localStorage.getItem("token");
+
+            if (!token) {
+                window.location.href = "/login-page";
+                throw new Error("Please log in to access your profile.");
+            }
+
+            const response = await fetch(url, {
+                ...options,
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    ...(options.body
+                        ? { "Content-Type": "application/json" }
+                        : {}),
+                    ...options.headers
+                }
+            });
+
+            let data;
+
+            try {
+                data = await response.json();
+            } catch {
+                throw new Error("The server returned an invalid response.");
+            }
+
+            if (response.status === 401) {
+                localStorage.removeItem("token");
+                localStorage.removeItem("role");
+                window.location.href = "/login-page";
+                throw new Error("Your session has expired. Please log in again.");
+            }
+
+            if (!response.ok) {
+                throw new Error(data.message || "Request failed.");
+            }
+
+            return data;
+        }
+
+        async function loadProfile() {
+            try {
+                const data = await apiRequest("/api/profile");
+
+                document.getElementById("name").value = data.name || "";
+                document.getElementById("email").value = data.email || "";
+                document.getElementById("mobile").value = data.mobile || "";
+                document.getElementById("qualification").value =
+                    data.qualification || "";
+                document.getElementById("skills").value = data.skills || "";
+
+                updateAvatar();
+                updateProfileCompletion();
+
+                originalProfile = snapshotProfile();
+                setEditing(false);
+                showMessage("");
+            } catch (error) {
+                showMessage(error.message, true);
+            }
+        }
+
+        editButton.addEventListener("click", () => {
+            originalProfile = snapshotProfile();
+            showMessage("");
+            setEditing(true);
+            document.getElementById("name").focus();
+        });
+
+        cancelButton.addEventListener("click", () => {
+            restoreProfile(originalProfile);
+            showMessage("");
+            setEditing(false);
+        });
+
+        fields.forEach(id => {
+            document.getElementById(id).addEventListener("input", () => {
+                updateProfileCompletion();
+
+                if (id === "name") {
+                    updateAvatar();
+                }
+            });
+        });
+
+        form.addEventListener("submit", async event => {
+            event.preventDefault();
+
+            if (!isEditing) {
+                return;
+            }
+
+            showMessage("");
+
+            if (!form.reportValidity()) {
+                return;
+            }
+
+            saveButton.disabled = true;
+            cancelButton.disabled = true;
+
+            const profile = snapshotProfile();
+
+            try {
+                const data = await apiRequest("/api/profile", {
+                    method: "PATCH",
+                    body: JSON.stringify(profile)
+                });
+
+                originalProfile = snapshotProfile();
+                updateAvatar();
+                updateProfileCompletion();
+                setEditing(false);
+
+                showMessage(data.message || "Profile updated successfully!");
+            } catch (error) {
+                showMessage(error.message, true);
+            } finally {
+                saveButton.disabled = false;
+                cancelButton.disabled = false;
+            }
+        });
+
+        loadProfile();
+    </script>
+</body>
+</html>
