@@ -27,3 +27,5 @@ app/static/uploads/
 .vscode/
 .DS_Store
 Thumbs.db
+
+*.sql
